@@ -9,7 +9,8 @@ PREFIX fr:   <http://example.org/film-rating#>
 
 1) Какие режиссёры в конкретном жанре были кассовыми в конкретном году?
 ```sparql
-SELECT ?director ?directorName
+# 1. Кассовые режиссёры
+SELECT ?director ?directorName ?genreLabel
        (SUM(?revenue) AS ?totalRevenue)
        (COUNT(DISTINCT ?movie) AS ?movieCount)
 WHERE {
@@ -19,24 +20,55 @@ WHERE {
          fr:releaseDate ?date ;
          fr:hasCrew ?role .
 
-  ?genre fr:label "Action" .          # тут жанр
+  ?genre fr:label ?genreLabel .
+  FILTER(CONTAINS(LCASE(?genreLabel), "action"))  # ищем жанры с этими словами
+
   BIND (YEAR(?date) AS ?year)
-  FILTER (?year = 2009)               # тут год
+  FILTER (?year = 2009)
 
   ?role a fr:CrewRole ;
-        fr:crewJob "Director" ;       # режиссёры
+        fr:crewJob ?job ;
         fr:creditsPerson ?director .
+
+  FILTER(CONTAINS(LCASE(?job), "director"))  # ищем любые director должности
+
+  ?director fr:label ?directorName .
+}
+GROUP BY ?director ?directorName ?genreLabel
+ORDER BY DESC(?totalRevenue)
+LIMIT 10
+
+# 1а. Кассовые режиссёры за 2009 год (любой жанр)
+SELECT ?director ?directorName
+       (SUM(?revenue) AS ?totalRevenue)
+       (COUNT(DISTINCT ?movie) AS ?movieCount)
+WHERE {
+  ?movie a fr:Movie ;
+         fr:revenue ?revenue ;
+         fr:releaseDate ?date ;
+         fr:hasCrew ?role .
+
+  BIND (YEAR(?date) AS ?year)
+  FILTER (?year = 2009)
+
+  ?role a fr:CrewRole ;
+        fr:crewJob ?job ;
+        fr:creditsPerson ?director .
+
+  FILTER(CONTAINS(LCASE(?job), "director"))
 
   ?director fr:label ?directorName .
 }
 GROUP BY ?director ?directorName
 ORDER BY DESC(?totalRevenue)
-LIMIT 20
+LIMIT 10
 ```
 2) Какие актёры в заданном жанре регулярно появлялись в высокооценённых фильмах в течение определённого промежутка времени?
 ```sparql
-SELECT ?actor ?actorName
+# 2. Актёры в высокооценённых фильмах (более гибкие критерии)
+SELECT ?actor ?actorName ?genreLabel
        (COUNT(DISTINCT ?movie) AS ?highRatedMovieCount)
+       (AVG(?rating) AS ?avgRating)
 WHERE {
   ?movie a fr:Movie ;
          fr:hasGenre ?genre ;
@@ -44,23 +76,26 @@ WHERE {
          fr:releaseDate ?date ;
          fr:hasCast ?castRole .
 
-  ?genre fr:label "Drama" .          # жанр
+  ?genre fr:label ?genreLabel .
+  FILTER(CONTAINS(LCASE(?genreLabel), "drama"))
+
   BIND (YEAR(?date) AS ?year)
-  FILTER (?year >= 2000 && ?year <= 2010)  # промежуток времени
-  FILTER (?rating >= 7.5)                  # "высоко оценённый" фильм
+  FILTER (?year >= 2000 && ?year <= 2010)
+  FILTER (?rating >= 7.0)  # снизим порог
 
   ?castRole a fr:CastRole ;
             fr:playedBy ?actor .
 
   ?actor fr:label ?actorName .
 }
-GROUP BY ?actor ?actorName
-HAVING (COUNT(DISTINCT ?movie) >= 3)       # "регулярно" = минимум 3 фильма
-ORDER BY DESC(?highRatedMovieCount) ?actorName
-LIMIT 50
+GROUP BY ?actor ?actorName ?genreLabel
+HAVING (COUNT(DISTINCT ?movie) >= 2)  # снизим до 2 фильмов
+ORDER BY DESC(?highRatedMovieCount) DESC(?avgRating)
+LIMIT 10
 ```
 3) Какие кино-компании спродюссировали самые кассовые фильмы в конкретный промежуток времени?
 ```sparql
+# 3. Самые кассовые кино-компании
 SELECT ?company ?companyName
        (SUM(?revenue) AS ?totalRevenue)
        (COUNT(DISTINCT ?movie) AS ?movieCount)
@@ -71,120 +106,123 @@ WHERE {
          fr:releaseDate ?date .
 
   FILTER (?date >= "2005-01-01"^^xsd:date &&
-          ?date <= "2010-12-31"^^xsd:date)  # период
+          ?date <= "2010-12-31"^^xsd:date)
 
   ?company fr:label ?companyName .
 }
 GROUP BY ?company ?companyName
 ORDER BY DESC(?totalRevenue)
-LIMIT 20
-
+LIMIT 10
 ```
 4) Какой язык оригинальной озвучки ассоциирован с наиболее высокими средними рейтингами фильмов в конкретном жанре?
 ```sparql
+# 4. Языки озвучки с высокими рейтингами в Sci-Fi
 SELECT ?lang ?langLabel
        (AVG(?rating) AS ?avgRating)
        (COUNT(DISTINCT ?movie) AS ?movieCount)
 WHERE {
   ?movie a fr:Movie ;
          fr:hasGenre ?genre ;
-         fr:originalLanguage ?lang ;
+         fr:spokenLanguage ?lang ;
          fr:voteAverage ?rating .
-
-  ?genre fr:label "Science Fiction" .        # жанр
-
+         
+  ?genre fr:label ?genreLabel .
+  FILTER(CONTAINS(LCASE(?genreLabel), "science fiction"))
+  
+  # Пытаемся получить метку языка, если есть
   OPTIONAL { ?lang fr:label ?langLabel . }
+  
+  # Если нет метки, используем сам URI
+  BIND(COALESCE(?langLabel, STR(?lang)) AS ?langLabel)
 }
 GROUP BY ?lang ?langLabel
-HAVING (COUNT(DISTINCT ?movie) >= 5)         # можно отсеять языки с 1 фильмом
+HAVING (COUNT(DISTINCT ?movie) >= 3)
 ORDER BY DESC(?avgRating)
 LIMIT 10
-
 ```
 5) Какие режиссёры снимают фильмы с более высокими оценками чем в среднем по жанру
 ```sparql
-SELECT ?director ?directorName
-       ?genre ?genreName
-       ?directorAvgRating ?genreAvgRating
+# 5. Режиссёры с оценками выше среднего по их жанрам (оптимизированный)
+SELECT ?director ?directorName ?genreName
+       (AVG(?rating) AS ?directorAvgRating)
+       ?genreAvgRating
+       (COUNT(DISTINCT ?movie) AS ?directorMovieCount)
 WHERE {
-  # Подзапрос: средний рейтинг по жанру
+  # Подзапрос: средний рейтинг по жанрам
   {
     SELECT ?genre (AVG(?r) AS ?genreAvgRating)
     WHERE {
       ?m a fr:Movie ;
          fr:hasGenre ?genre ;
          fr:voteAverage ?r .
+      FILTER(?r > 0)
     }
     GROUP BY ?genre
+    HAVING (COUNT(DISTINCT ?m) >= 10)
   }
 
-  # Подзапрос: средний рейтинг режиссёра в жанре
-  {
-    SELECT ?director ?genre (AVG(?r2) AS ?directorAvgRating)
-    WHERE {
-      ?movie a fr:Movie ;
-             fr:hasGenre ?genre ;
-             fr:voteAverage ?r2 ;
-             fr:hasCrew ?role .
-
-      ?role a fr:CrewRole ;
-            fr:crewJob "Director" ;
-            fr:creditsPerson ?director .
-    }
-    GROUP BY ?director ?genre
-    HAVING (COUNT(DISTINCT ?movie) >= 2)      # режиссёр снял >= 2 фильмов в жанре
-  }
+  # Основной паттерн: фильмы × жанры × режиссёры
+  ?movie a fr:Movie ;
+         fr:hasGenre ?genre ;
+         fr:voteAverage ?rating ;
+         fr:directedBy ?director .
+  FILTER(?rating > 0)
 
   ?director fr:label ?directorName .
   ?genre    fr:label ?genreName .
-
-  FILTER (?directorAvgRating > ?genreAvgRating)
 }
-ORDER BY DESC(?directorAvgRating)
+GROUP BY ?director ?directorName ?genre ?genreName ?genreAvgRating
+HAVING (COUNT(DISTINCT ?movie) >= 2 &&
+        AVG(?rating) > ?genreAvgRating)
+ORDER BY DESC(AVG(?rating) - ?genreAvgRating)
 LIMIT 50
-
 ```
 6) Какой съёмочный каст чаще всего работает над фильмами с профитностью выше средней?
 ```sparql
+# 6. Сотрудники на высокоприбыльных фильмах
 SELECT ?person ?personName
        (COUNT(DISTINCT ?movie) AS ?highProfitMovieCount)
 WHERE {
 
-  # Подзапрос: средний профит по фильмам
+  # === (1) ОДИН маленький подзапрос: посчитали среднюю прибыль ===
   {
-    SELECT (AVG(?profit) AS ?avgProfit)
+    SELECT (AVG(?profitVal) AS ?avgProfit)
     WHERE {
       ?m a fr:Movie ;
          fr:revenue ?rev ;
          fr:budget ?bud .
-      BIND (xsd:decimal(?rev - ?bud) AS ?profit)
+      FILTER(?rev > 0 && ?bud > 0)
+
+      BIND(xsd:decimal(?rev - ?bud) AS ?profitVal)
     }
   }
 
-  # Фильмы с профитом выше среднего
+  # === (2) ФИЛЬМЫ, прибыль выше средней ===
   ?movie a fr:Movie ;
          fr:revenue ?revenue ;
          fr:budget ?budget ;
          fr:hasCrew ?crewRole .
 
-  BIND (xsd:decimal(?revenue - ?budget) AS ?profitMovie)
-  FILTER (?profitMovie > ?avgProfit)
+  FILTER(?revenue > 0 && ?budget > 0)
+  BIND(xsd:decimal(?revenue - ?budget) AS ?profitMovie)
+  FILTER(?profitMovie > ?avgProfit)
 
-  ?crewRole a fr:CrewRole ;
-            fr:creditsPerson ?person .
-
+  # === (3) Участники съёмочной группы ===
+  ?crewRole fr:creditsPerson ?person .
   ?person fr:label ?personName .
 }
 GROUP BY ?person ?personName
-HAVING (COUNT(DISTINCT ?movie) >= 3)
+HAVING(COUNT(DISTINCT ?movie) >= 2)
 ORDER BY DESC(?highProfitMovieCount)
-LIMIT 50
+LIMIT 10
 ```
 7) Какие жанры, как правило, имеют более длительную продолжительность у коммерчески успешных фильмов, вышедших в определённом году?
 ```sparql
+# 7. Жанры с самой большой продолжительностью фильмов
 SELECT ?genre ?genreName
        (AVG(?runtime) AS ?avgRuntime)
        (COUNT(DISTINCT ?movie) AS ?movieCount)
+       (SUM(?revenue) AS ?totalRevenue)
 WHERE {
   ?movie a fr:Movie ;
          fr:hasGenre ?genre ;
@@ -193,20 +231,20 @@ WHERE {
          fr:releaseDate ?date .
 
   BIND (YEAR(?date) AS ?year)
-  FILTER (?year = 2010)                # год
-
-  FILTER (?revenue >= 100000000)       # "коммерчески успешный" порог
+  FILTER (?year = 2010)
+  FILTER (?revenue >= 50000000)  # снизим порог успешности
+  FILTER (?runtime > 0)  # исключаем нулевую продолжительность
 
   ?genre fr:label ?genreName .
 }
 GROUP BY ?genre ?genreName
-HAVING (COUNT(DISTINCT ?movie) >= 3)
+HAVING (COUNT(DISTINCT ?movie) >= 2)
 ORDER BY DESC(?avgRuntime)
-LIMIT 20
-
+LIMIT 15
 ```
 8) Какие ключевые слова наиболее ассоциированы с лучшими по рейтингу фильмами в конкретный промежуток времени?
 ```sparql
+# 8. Ключевые слова лучших фильмов
 SELECT ?keyword ?keywordLabel
        (COUNT(DISTINCT ?movie) AS ?movieCount)
        (AVG(?rating) AS ?avgRating)
@@ -217,15 +255,14 @@ WHERE {
          fr:releaseDate ?date .
 
   FILTER (?date >= "2000-01-01"^^xsd:date &&
-          ?date <= "2010-12-31"^^xsd:date)  # период
-
-  FILTER (?rating >= 7.5)                    # "лучшие" фильмы
+          ?date <= "2010-12-31"^^xsd:date)
+  FILTER (?rating >= 7.0)  # снизим порог
 
   OPTIONAL { ?keyword fr:label ?keywordLabel . }
+  FILTER(BOUND(?keywordLabel))  # только ключевые слова с меткой
 }
 GROUP BY ?keyword ?keywordLabel
-HAVING (COUNT(DISTINCT ?movie) >= 5)
+HAVING (COUNT(DISTINCT ?movie) >= 3)  # снизим порог
 ORDER BY DESC(?movieCount) DESC(?avgRating)
-LIMIT 50
-
+LIMIT 10
 ```

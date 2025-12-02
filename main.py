@@ -94,6 +94,14 @@ for _, row in df.iterrows():
     if not pd.isna(row["revenue"]):
         g.add((m, FR.revenue, Literal(int(row["revenue"]), datatype=XSD.integer)))
 
+    # материализуем profit
+    if not pd.isna(row["budget"]) and not pd.isna(row["revenue"]):
+        budget_val = int(row["budget"])
+        revenue_val = int(row["revenue"])
+        profit_val = revenue_val - budget_val
+        # можно игнорировать отрицательную/нулевую прибыль, если не надо
+        if profit_val > 0:
+            g.add((m, FR.profit, Literal(profit_val, datatype=XSD.integer)))
     if not pd.isna(row["runtime"]):
         g.add((m, FR.runtime, Literal(float(row["runtime"]), datatype=XSD.decimal)))
 
@@ -256,6 +264,10 @@ for _, row in df.iterrows():
             if dept:
                 g.add((role, FR.crewDepartment,
                        Literal(dept, datatype=XSD.string)))
+
+            # director
+            if job and "director" in job.lower():
+                g.add((m, FR.directedBy, person))
 
 # === 6. Сохраняем граф ===
 

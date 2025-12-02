@@ -1,0 +1,296 @@
+/Users/ren1kron/5sem/sisi/lab2/python-lab2-ai/.venv/bin/python /Users/ren1kron/5sem/graphs/try-100500/sparql.py
+Загрузка RDF графа...
+✓ Граф загружен успешно!
+✓ Количество триплетов: 1,555,590
+✓ Пространство имен: http://example.org/film-rating#
+
+============================================================
+ПРОВЕРКА СТРУКТУРЫ ДАННЫХ
+============================================================
+
+============================================================
+Запрос: Популярные жанры
+============================================================
+Время выполнения: 0.02 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+genreLabel       movieCount
+-----------------------
+Drama            2297
+Comedy           1722
+Thriller         1274
+Action           1154
+Romance          894
+Adventure        790
+Crime            696
+Science Fiction  535
+Horror           519
+Family           513
+
+Найдено записей: 10
+
+============================================================
+Запрос: Фильмы за 2009 год
+============================================================
+Время выполнения: 0.01 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+movieCount
+-----
+247
+
+Найдено записей: 1
+
+============================================================
+ВЫПОЛНЕНИЕ ОСНОВНЫХ ЗАПРОСОВ
+============================================================
+
+============================================================
+Запрос: 1. Кассовые режиссёры (2009 год, Action)
+============================================================
+Время выполнения: 54.74 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+director                                       directorName        genreLabel  totalRevenue  movieCount
+------------------------------------------------------------------------------------------
+http://example.org/film-rating#person/12653    Kim Sinclair        Action  2787965087  1
+http://example.org/film-rating#person/1376895  Mike Stassi         Action  2787965087  1
+http://example.org/film-rating#person/1376898  Jeffrey Wisniewski  Action  2787965087  1
+http://example.org/film-rating#person/1401808  Jeremy Hollobon     Action  2787965087  1
+http://example.org/film-rating#person/1401809  Orlando Meunier     Action  2787965087  1
+http://example.org/film-rating#person/1401810  Taisuke Tanimura    Action  2787965087  1
+http://example.org/film-rating#person/1447362  Eric Oliver         Action  2787965087  1
+http://example.org/film-rating#person/18265    Mauro Fiore         Action  2787965087  1
+http://example.org/film-rating#person/2710     James Cameron       Action  2787965087  1
+http://example.org/film-rating#person/6878     Kevin Ishioka       Action  2787965087  1
+
+Найдено записей: 10
+
+============================================================
+Запрос: 1а. Кассовые режиссёры (2009 год, любой жанр)
+============================================================
+Время выполнения: 19.86 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+director                                       directorName        totalRevenue  movieCount
+----------------------------------------------------------------------------------
+http://example.org/film-rating#person/1401808  Jeremy Hollobon     2998784698  2
+http://example.org/film-rating#person/12653    Kim Sinclair        2787965087  1
+http://example.org/film-rating#person/1376895  Mike Stassi         2787965087  1
+http://example.org/film-rating#person/1376898  Jeffrey Wisniewski  2787965087  1
+http://example.org/film-rating#person/1401809  Orlando Meunier     2787965087  1
+http://example.org/film-rating#person/1401810  Taisuke Tanimura    2787965087  1
+http://example.org/film-rating#person/1447362  Eric Oliver         2787965087  1
+http://example.org/film-rating#person/18265    Mauro Fiore         2787965087  1
+http://example.org/film-rating#person/2710     James Cameron       2787965087  1
+http://example.org/film-rating#person/6878     Kevin Ishioka       2787965087  1
+
+Найдено записей: 10
+
+============================================================
+Запрос: 2. Актёры в жанре Drama с высокими рейтингами (2000-2010)
+============================================================
+Время выполнения: 46.22 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+actor                                         actorName          genreLabel  highRatedMovieCount  avgRating
+----------------------------------------------------------------------------------------------------------
+http://example.org/film-rating#person/1892    Matt Damon         Drama  7  7.271428571428571428571428571
+http://example.org/film-rating#person/3894    Christian Bale     Drama  6  7.583333333333333333333333333
+http://example.org/film-rating#person/6193    Leonardo DiCaprio  Drama  6  7.466666666666666666666666667
+http://example.org/film-rating#person/192     Morgan Freeman     Drama  6  7.466666666666666666666666667
+http://example.org/film-rating#person/103     Mark Ruffalo       Drama  6  7.366666666666666666666666667
+http://example.org/film-rating#person/2617    Cara Seymour       Drama  6  7.3
+http://example.org/film-rating#person/5292    Denzel Washington  Drama  6  7.283333333333333333333333333
+http://example.org/film-rating#person/1248    Brian Cox          Drama  6  7.266666666666666666666666667
+http://example.org/film-rating#person/928638  John Franchi       Drama  5  7.52
+http://example.org/film-rating#person/20089   Jena Malone        Drama  5  7.5
+
+Найдено записей: 10
+
+============================================================
+Запрос: 3. Самые кассовые кино-компании (2005-2010)
+============================================================
+Время выполнения: 1.23 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+company                                      companyName                             totalRevenue  movieCount
+------------------------------------------------------------------------------------------------------
+http://example.org/film-rating#company/6194  Warner Bros.                            14486935874  78
+http://example.org/film-rating#company/306   Twentieth Century Fox Film Corporation  10223506014  48
+http://example.org/film-rating#company/2     Walt Disney Pictures                    9941346724   33
+http://example.org/film-rating#company/33    Universal Pictures                      9739085284   81
+http://example.org/film-rating#company/7295  Relativity Media                        9120921307   68
+http://example.org/film-rating#company/5     Columbia Pictures                       8949522843   51
+http://example.org/film-rating#company/444   Dune Entertainment                      8831418014   39
+http://example.org/film-rating#company/4     Paramount Pictures                      8741068325   48
+http://example.org/film-rating#company/289   Ingenious Film Partners                 6234788067   23
+http://example.org/film-rating#company/521   DreamWorks Animation                    5406064426   12
+
+Найдено записей: 10
+
+============================================================
+Запрос: 4. Языки с высокими рейтингами в Sci-Fi
+============================================================
+Время выполнения: 1.76 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+lang                                    langLabel  avgRating                      movieCount
+---------------------------------------------------------------------------------------
+http://example.org/film-rating#lang/hu  Magyar     6.675                          4
+http://example.org/film-rating#lang/cn  广州话 / 廣州話  6.48                           5
+http://example.org/film-rating#lang/es  Español    6.341935483870967741935483871  31
+http://example.org/film-rating#lang/la  Latin      6.3                            3
+http://example.org/film-rating#lang/zh  普通话        6.255555555555555555555555556  9
+http://example.org/film-rating#lang/ja  日本語        6.105882352941176470588235294  17
+http://example.org/film-rating#lang/de  Deutsch    6.030769230769230769230769231  26
+http://example.org/film-rating#lang/en  English    6.003125                       512
+http://example.org/film-rating#lang/ru  Pусский    5.970833333333333333333333333  24
+http://example.org/film-rating#lang/fr  Français   5.835555555555555555555555556  45
+
+Найдено записей: 10
+
+============================================================
+Запрос: 5. Режиссёры с самыми высокими средними рейтингами
+============================================================
+Время выполнения: 7.02 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+director                                       directorName         genreName        directorAvgRating              genreAvgRating                 directorMovieCount
+------------------------------------------------------------------------------------------------------------------------------------------------------
+http://example.org/film-rating#person/77919    Tim McCanlies        Comedy           8.45                           5.990813341135166764189584552  2
+http://example.org/film-rating#person/77919    Tim McCanlies        Family           8.45                           6.065098039215686274509803922  2
+http://example.org/film-rating#person/19596    Atsushi Okui         Fantasy          8.233333333333333333333333333  6.096698113207547169811320755  3
+http://example.org/film-rating#person/608      Hayao Miyazaki       Fantasy          8.233333333333333333333333333  6.096698113207547169811320755  3
+http://example.org/film-rating#person/525      Christopher Nolan    Science Fiction  8.1                            6.016853932584269662921348315  2
+http://example.org/film-rating#person/19596    Atsushi Okui         Adventure        8.233333333333333333333333333  6.156962025316455696202531646  3
+http://example.org/film-rating#person/608      Hayao Miyazaki       Adventure        8.233333333333333333333333333  6.156962025316455696202531646  3
+http://example.org/film-rating#person/18379    Hal W. Polaire       Comedy           8.05                           5.990813341135166764189584552  2
+http://example.org/film-rating#person/1625347  Tony Brandt          Crime            8.35                           6.319536903039073806078147612  2
+http://example.org/film-rating#person/4027     Frank Darabont       Crime            8.35                           6.319536903039073806078147612  2
+http://example.org/film-rating#person/77919    Tim McCanlies        Drama            8.45                           6.450373626373626373626373626  2
+http://example.org/film-rating#person/74401    Hoyte van Hoytema    Science Fiction  8.0                            6.016853932584269662921348315  2
+http://example.org/film-rating#person/525      Christopher Nolan    Adventure        8.1                            6.156962025316455696202531646  2
+http://example.org/film-rating#person/7975     Patrick Lin          Comedy           7.85                           5.990813341135166764189584552  2
+http://example.org/film-rating#person/1566280  Nilo Otero           Thriller         7.9                            6.053754940711462450592885375  2
+http://example.org/film-rating#person/19596    Atsushi Okui         Family           7.9                            6.065098039215686274509803922  2
+http://example.org/film-rating#person/608      Hayao Miyazaki       Family           7.9                            6.065098039215686274509803922  2
+http://example.org/film-rating#person/525      Christopher Nolan    Action           7.85                           6.015578764142732811140121845  4
+http://example.org/film-rating#person/18379    Hal W. Polaire       Romance          8.05                           6.228619528619528619528619529  2
+http://example.org/film-rating#person/17761    Joseph Walker        Comedy           7.8                            5.990813341135166764189584552  2
+http://example.org/film-rating#person/1625347  Tony Brandt          Drama            8.233333333333333333333333333  6.450373626373626373626373626  3
+http://example.org/film-rating#person/7305     John L. Russell      Horror           7.45                           5.692397660818713450292397661  2
+http://example.org/film-rating#person/525      Christopher Nolan    Thriller         7.8                            6.053754940711462450592885375  6
+http://example.org/film-rating#person/12890    Pete Docter          Comedy           7.733333333333333333333333333  5.990813341135166764189584552  3
+http://example.org/film-rating#person/19596    Atsushi Okui         Animation        8.05                           6.341452991452991452991452991  4
+http://example.org/film-rating#person/608      Hayao Miyazaki       Animation        8.05                           6.341452991452991452991452991  4
+http://example.org/film-rating#person/1325917  Simon Lamont         Thriller         7.75                           6.053754940711462450592885375  2
+http://example.org/film-rating#person/2361     Tonino Delli Colli   Western          8.1                            6.412658227848101265822784810  2
+http://example.org/film-rating#person/3146     Billy Wilder         Comedy           7.666666666666666666666666667  5.990813341135166764189584552  3
+http://example.org/film-rating#person/12890    Pete Docter          Family           7.733333333333333333333333333  6.065098039215686274509803922  3
+http://example.org/film-rating#person/149      Robert Richardson    Action           7.675                          6.015578764142732811140121845  4
+http://example.org/film-rating#person/1395434  David Meyer          Comedy           7.65                           5.990813341135166764189584552  2
+http://example.org/film-rating#person/62543    Alan B. Curtiss      Drama            8.1                            6.450373626373626373626373626  2
+http://example.org/film-rating#person/5261     Boris Kaufman        Drama            8.1                            6.450373626373626373626373626  2
+http://example.org/film-rating#person/149      Robert Richardson    Thriller         7.7                            6.053754940711462450592885375  4
+http://example.org/film-rating#person/7975     Patrick Lin          Family           7.7                            6.065098039215686274509803922  3
+http://example.org/film-rating#person/15328    Kevin Kavanaugh      Drama            8.05                           6.450373626373626373626373626  2
+http://example.org/film-rating#person/56021    Danny Cohen          Thriller         7.65                           6.053754940711462450592885375  2
+http://example.org/film-rating#person/559      Wally Pfister        Action           7.6                            6.015578764142732811140121845  5
+http://example.org/film-rating#person/22161    Ben Davis            Science Fiction  7.6                            6.016853932584269662921348315  2
+http://example.org/film-rating#person/1566280  Nilo Otero           Crime            7.9                            6.319536903039073806078147612  2
+http://example.org/film-rating#person/138      Quentin Tarantino    Thriller         7.633333333333333333333333333  6.053754940711462450592885375  6
+http://example.org/film-rating#person/1348081  Arthur S. Black Jr.  Comedy           7.55                           5.990813341135166764189584552  2
+http://example.org/film-rating#person/8346     Jerry Ziesmer        Drama            8.0                            6.450373626373626373626373626  2
+http://example.org/film-rating#person/2662     Frank Capra          Comedy           7.525                          5.990813341135166764189584552  4
+http://example.org/film-rating#person/1392669  Fiona Scott          Science Fiction  7.55                           6.016853932584269662921348315  2
+http://example.org/film-rating#person/1325917  Simon Lamont         Crime            7.85                           6.319536903039073806078147612  2
+http://example.org/film-rating#person/4385     Sergio Leone         Western          7.933333333333333333333333333  6.412658227848101265822784810  3
+http://example.org/film-rating#person/1032     Martin Scorsese      Thriller         7.566666666666666666666666667  6.053754940711462450592885375  3
+http://example.org/film-rating#person/525      Christopher Nolan    Mystery          7.75                           6.237681159420289855072463768  4
+
+Найдено записей: 50
+
+============================================================
+Запрос: 6. Сотрудники на высокоприбыльных фильмах
+============================================================
+Время выполнения: 6.87 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+person                                         personName           highProfitMovieCount
+------------------------------------------------------------------------
+http://example.org/film-rating#person/488      Steven Spielberg     45
+http://example.org/film-rating#person/947      Hans Zimmer          40
+http://example.org/film-rating#person/491      John Williams        36
+http://example.org/film-rating#person/1213     James Newton Howard  29
+http://example.org/film-rating#person/11098    John Powell          28
+http://example.org/film-rating#person/68016    Kevin Kaska          27
+http://example.org/film-rating#person/493      Michael Kahn         27
+http://example.org/film-rating#person/531      Danny Elfman         26
+http://example.org/film-rating#person/1338372  Dan O'Connell        26
+http://example.org/film-rating#person/1456696  Brian N. Bentley     25
+
+Найдено записей: 10
+
+============================================================
+Запрос: 7. Жанры с самой большой продолжительностью (2010)
+============================================================
+Время выполнения: 1.36 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+genre                                       genreName        avgRuntime                     movieCount  totalRevenue
+------------------------------------------------------------------------------------------------------------
+http://example.org/film-rating#genre/9648   Mystery          122.0                          6   1603745809
+http://example.org/film-rating#genre/18     Drama            117.1153846153846153846153846  26  4628939372
+http://example.org/film-rating#genre/10749  Romance          115.1333333333333333333333333  15  2940113382
+http://example.org/film-rating#genre/10752  War              115.0                          2   209859993
+http://example.org/film-rating#genre/878    Science Fiction  112.7777777777777777777777778  9   2886394016
+http://example.org/film-rating#genre/80     Crime            111.9166666666666666666666667  12  1132191790
+http://example.org/film-rating#genre/53     Thriller         110.7272727272727272727272727  22  3880445683
+http://example.org/film-rating#genre/12     Adventure        110.6956521739130434782608696  23  8401500216
+http://example.org/film-rating#genre/14     Fantasy          109.4615384615384615384615385  13  5053817369
+http://example.org/film-rating#genre/28     Action           109.3571428571428571428571429  28  6460567586
+http://example.org/film-rating#genre/35     Comedy           101.65625                      32  6165688964
+http://example.org/film-rating#genre/10751  Family           97.6                           15  6371426554
+http://example.org/film-rating#genre/16     Animation        95.125                         8   4113302989
+http://example.org/film-rating#genre/27     Horror           93.22222222222222222222222222  9   1065248619
+
+Найдено записей: 14
+
+============================================================
+Запрос: 8. Ключевые слова лучших фильмов (2000-2010)
+============================================================
+Время выполнения: 4.44 сек
+
+Результаты:
+--------------------------------------------------------------------------------
+keyword                                        keywordLabel          movieCount  avgRating
+--------------------------------------------------------------------------------------------------------
+http://example.org/film-rating#keyword/187056  woman director        30  7.27
+http://example.org/film-rating#keyword/10183   independent film      28  7.357142857142857142857142857
+http://example.org/film-rating#keyword/818     based on novel        18  7.416666666666666666666666667
+http://example.org/film-rating#keyword/9826    murder                18  7.227777777777777777777777778
+http://example.org/film-rating#keyword/6075    sport                 16  7.325
+http://example.org/film-rating#keyword/179430  aftercreditsstinger   16  7.31875
+http://example.org/film-rating#keyword/5600    daughter              15  7.38
+http://example.org/film-rating#keyword/179431  duringcreditsstinger  15  7.36
+http://example.org/film-rating#keyword/5565    biography             15  7.333333333333333333333333333
+http://example.org/film-rating#keyword/3737    dying and death       14  7.364285714285714285714285714
+
+Найдено записей: 10
+
+============================================================
+ВЫПОЛНЕНИЕ ЗАВЕРШЕНО
+============================================================
+
+Process finished with exit code 0
